@@ -1,0 +1,18 @@
+package:
+  name: vlfeat
+  version: "0.9.20"
+
+source:
+  fn: vlfeat-0.9.20-bin.tar.gz
+  url: http://www.vlfeat.org/download/vlfeat-0.9.20-bin.tar.gz
+
+  patches:
+    - no_test.patch  # [unix]
+
+test:
+  commands: 
+    - sift -h      # [unix]
+    - ..\..\envs\_test\Library\bin\sift.exe -h  # [win]
+about:
+  home: http://www.vlfeat.org/
+  license: BSD
