@@ -9,13 +9,6 @@ source:
   patches:
     - no_test.patch  # [unix]
 
-requirements:
-  build:
-    - python
-  
-  run:
-    - python
-
 build:
   features:
     - vc9   # [win and py27]
