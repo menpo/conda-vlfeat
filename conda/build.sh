@@ -1,5 +1,8 @@
 #!/bin/bash
 
+LIBRARY_PATH=$PREFIX/lib
+INCLUDE_PATH=$PREFIX/include
+
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   if [ $ARCH -eq 64 ]; then
     VL_ARCH="glnxa64"
