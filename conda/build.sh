@@ -1,8 +1,5 @@
 #!/bin/bash
 
-LIBRARY_PATH=$PREFIX/lib
-INCLUDE_PATH=$PREFIX/include
-
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   if [ $ARCH -eq 64 ]; then
     VL_ARCH="glnxa64"
@@ -10,35 +7,32 @@ if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     VL_ARCH="glnx86"
   fi
   DYNAMIC_EXT="so"
+  DISABLE_OPENMP=0
 fi
 if [ "$(uname -s)" == "Darwin" ]; then
   VL_ARCH="maci64"
   DYNAMIC_EXT="dylib"
+  # OpenMP isn't supported on clang at this time
+  DISABLE_OPENMP=1
 fi
-
-export CFLAGS="-I$INCLUDE_PATH -DVL_DISABLE_SSE2=1 -DVL_DISABLE_AVX=1 -DVL_DISABLE_OPENMP=1 -DVL_DISABLE_THREADS=1"
-export LDFLAGS="-L$LIBRARY_PATH"
 
 # Turn off all optimisations. Use vlfeat_avx for a fast version
-make NO_TESTS=yes ARCH=${VL_ARCH} DISABLE_SSE2=yes DISABLE_AVX=yes DISABLE_THREADS=yes DISABLE_OPENMP=yes -j${CPU_COUNT}
+make NO_TESTS=yes ARCH=${VL_ARCH} DISABLE_AVX=yes DISABLE_OPENMP=$DISABLE_OPENMP MKOCTFILE="" MEX="" VERB=1 -j${CPU_COUNT}
 
-# On OSX the resolution of the libvl.dylib doesn't seem to
-# work properly for the executables - but they are properly
-# relatively linked using @loader_path, therefore, copy
-# the dylib into bin so they work properly.
-if [ "$(uname -s)" == "Darwin" ]; then
-  mkdir -p $PREFIX/bin/
-  cp bin/${VL_ARCH}/libvl.${DYNAMIC_EXT} $PREFIX/bin/
-fi
-
+# Copy all the files and executables
 mkdir -p $PREFIX/bin
-cp bin/${VL_ARCH}/sift $PREFIX/bin/
-cp bin/${VL_ARCH}/mser $PREFIX/bin/
-cp bin/${VL_ARCH}/aib $PREFIX/bin/
+cp bin/${VL_ARCH}/sift $PREFIX/bin/sift
+cp bin/${VL_ARCH}/mser $PREFIX/bin/mser
+cp bin/${VL_ARCH}/aib $PREFIX/bin/aib
 
-mkdir -p $LIBRARY_PATH
-cp bin/${VL_ARCH}/libvl.${DYNAMIC_EXT} $LIBRARY_PATH/
+mkdir -p $PREFIX/lib
+cp bin/${VL_ARCH}/libvl.${DYNAMIC_EXT} $PREFIX/lib/libvl.${DYNAMIC_EXT}
+mkdir -p $PREFIX/include/vl
+cp vl/*.h $PREFIX/include/vl/
 
-mkdir -p $INCLUDE_PATH/vl
-cp vl/*.h $INCLUDE_PATH/vl
-
+# For some reason the instal_name_tool fails, so I do it manually here
+if [ "$(uname -s)" == "Darwin" ]; then
+  install_name_tool -change @loader_path/libvl.dylib @rpath/../lib/libvl.dylib $PREFIX/bin/sift
+  install_name_tool -change @loader_path/libvl.dylib @rpath/../lib/libvl.dylib $PREFIX/bin/mser
+  install_name_tool -change @loader_path/libvl.dylib @rpath/../lib/libvl.dylib $PREFIX/bin/aib
+fi
