@@ -1,0 +1,17 @@
+--- Makefile.mak
++++ Makefile.mak
+@@ -34,11 +34,11 @@
+ GIT = git
+ 
+ !if "$(MSVCROOT)" == ""
+-MSVCROOT = C:\Program Files\Microsoft Visual Studio 10.0\VC
++MSVCROOT = %%PROGRAMFILES(x86)%%\Microsoft Visual Studio 10.0\VC
+ !endif
+ 
+ !if "$(WINSDKROOT)" == ""
+-WINSDKROOT = C:\Program Files\Microsoft SDKs\Windows\v7.0A
++WINSDKROOT = C:\Program Files\Microsoft SDKs\Windows\v7.1
+ !endif
+ 
+ !include make/nmake_helper.mak
+
