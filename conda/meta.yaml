@@ -1,12 +1,10 @@
-{% set version = "0.9.20" %}
-
 package:
   name: vlfeat
-  version: {{ version }}
+  version: "0.9.20"
 
 source:
-  fn: vlfeat-{{ version }}-bin.tar.gz
-  url: http://www.vlfeat.org/download/vlfeat-{{ version }}-bin.tar.gz
+  fn: vlfeat-0.9.20-bin.tar.gz
+  url: http://www.vlfeat.org/download/vlfeat-0.9.20-bin.tar.gz
   sha1: 1aa063af825b28dca332396732268e98f4821179
 
   patches:
