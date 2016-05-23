@@ -15,6 +15,7 @@ source:
     - no_test.patch        # [unix]
 
 build:
+  number: 1
   features:
     - vc9   # [win and py27]
     - vc10  # [win and py34]
@@ -23,12 +24,16 @@ build:
 requirements:
   build:
     - python  # [win]
+    - vcomp   # [win]
+
+  run:
+    - vcomp   # [win]
 
 test:
   requires:
     - python                                              # [win]
 
-  commands: 
+  commands:
     - sift -h
     - mser -h
     - aib -h
